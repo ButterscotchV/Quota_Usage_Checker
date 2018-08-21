@@ -347,7 +347,7 @@ public class Main {
 						if (line.matches(IP_RANGE_REGEX)) {
 							//System.out.println(line);
 
-							if (range == null && line.split("\\[").length == 4) {
+							if (line.split("\\[").length == 4) {
 								String ipRange = line.split("\\[")[2].split("\\]")[0].replaceAll("\"", "").trim();
 								range = new IPRange(ipRange);
 								//System.out.println(ipRange);
@@ -363,8 +363,12 @@ public class Main {
 								maxx = maxx.substring(1, maxx.length());
 								max = Long.parseLong(maxx);
 							}
+							
+							//System.out.println(line);
 
 							if (used != -1 && max != -1 && range != null) {
+								//System.out.println(range);
+								
 								Usage usage = Usage.createUsage(range, used, max);
 								quotas.add(usage);
 
