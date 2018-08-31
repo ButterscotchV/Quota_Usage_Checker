@@ -35,20 +35,25 @@ public class Popup {
 		but.setBounds((WIDTH / 2) - (80 / 2), 20 + (TEXT_SPACING * labels.length), 80, 28);
 		but.addMouseListener(new MouseListener() {
 
+			@Override
 			public void mouseClicked(MouseEvent e) {
 			}
 
+			@Override
 			public void mousePressed(MouseEvent e) {
 			}
 
+			@Override
 			public void mouseReleased(MouseEvent e) {
 				frame.setVisible(false);
 				frame.dispose();
 			}
 
+			@Override
 			public void mouseEntered(MouseEvent e) {
 			}
 
+			@Override
 			public void mouseExited(MouseEvent e) {
 			}
 		});

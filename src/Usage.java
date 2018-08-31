@@ -1,20 +1,29 @@
 
 public class Usage {
-	IPRange ipRange;
-	long downloadUsed;
-	long downloadTotal;
-	
-	private Usage(IPRange ipRange, long downloadUsed, long downloadTotal) {
+	public final IPRange ipRange;
+	public final long downloadUsed;
+	public final long downloadTotal;
+	public final long downloadSpeed;
+	public final long timestamp;
+	public double percentOfTotalSpeed = 0;
+
+	private Usage(IPRange ipRange, long downloadUsed, long downloadTotal, Usage lastUsage) {
 		this.ipRange = ipRange;
 		this.downloadUsed = downloadUsed;
 		this.downloadTotal = downloadTotal;
+		this.timestamp = System.currentTimeMillis() / 1000; // Current time in seconds
+
+		if (lastUsage != null)
+			this.downloadSpeed = (downloadUsed - lastUsage.downloadUsed) / (timestamp - lastUsage.timestamp);
+		else
+			this.downloadSpeed = 0;
 	}
-	
-	public static Usage createUsage(IPRange ipRange, long downloadUsed, long downloadTotal) {
-		return new Usage(ipRange, downloadUsed, downloadTotal);
+
+	public static Usage createUsage(IPRange ipRange, long downloadUsed, long downloadTotal, Usage lastUsage) {
+		return new Usage(ipRange, downloadUsed, downloadTotal, lastUsage);
 	}
-	
-	public static Usage createUsage(String ipRange, long downloadUsed, long downloadTotal) {
-		return new Usage(new IPRange(ipRange), downloadUsed, downloadTotal);
+
+	public static Usage createUsage(String ipRange, long downloadUsed, long downloadTotal, Usage lastUsage) {
+		return new Usage(new IPRange(ipRange), downloadUsed, downloadTotal, lastUsage);
 	}
 }

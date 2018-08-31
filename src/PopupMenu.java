@@ -3,9 +3,9 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-import javax.swing.JMenuItem;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 public class PopupMenu extends JPopupMenu {
@@ -41,9 +41,9 @@ public class PopupMenu extends JPopupMenu {
 			});
 			add(displayOver);
 		}
-		
+
 		addSeparator();
-		
+
 		JCheckBoxMenuItem oneMinute = new JCheckBoxMenuItem("Update every 1 minute");
 		oneMinute.setSelected(Main.minutesToUpdate == 1);
 		oneMinute.addMouseListener(new MouseAdapter() {
@@ -53,7 +53,7 @@ public class PopupMenu extends JPopupMenu {
 			}
 		});
 		add(oneMinute);
-		
+
 		JCheckBoxMenuItem fiveMinute = new JCheckBoxMenuItem("Update every 5 minutes");
 		fiveMinute.setSelected(Main.minutesToUpdate == 5);
 		fiveMinute.addMouseListener(new MouseAdapter() {
@@ -63,24 +63,26 @@ public class PopupMenu extends JPopupMenu {
 			}
 		});
 		add(fiveMinute);
-		
+
 		addSeparator();
-		
+
 		add(new JLabel("Available Ranges")); // Header
-		
+
 		ArrayList<Usage> sortedQuotas = new ArrayList<Usage>(Main.quotas);
 		sortedQuotas.sort(new Comparator<Usage>() {
 
 			@Override
 			public int compare(Usage o1, Usage o2) {
-				return (o1.ipRange.end.equals(o2.ipRange.start) ? 0 : (o1.ipRange.end.lessThan(o2.ipRange.start) ? -1 : 1));
+				return (o1.ipRange.end.equals(o2.ipRange.start) ? 0
+						: (o1.ipRange.end.lessThan(o2.ipRange.start) ? -1 : 1));
 			}
-			
+
 		});
-		
+
 		for (Usage usage : sortedQuotas) {
-			
-			JCheckBoxMenuItem usageOption = new JCheckBoxMenuItem(usage.ipRange.start.toString() + " - " + usage.ipRange.end.toString() + (Main.mainUsage == usage ? " (Yours)" : ""));
+
+			JCheckBoxMenuItem usageOption = new JCheckBoxMenuItem(usage.ipRange.start.toString() + " - "
+					+ usage.ipRange.end.toString() + (Main.mainUsage == usage ? " (Yours)" : ""));
 			usageOption.setSelected(Main.curUsage == usage);
 			usageOption.addMouseListener(new MouseAdapter() {
 				@Override

@@ -16,7 +16,7 @@ public class Settings {
 	public boolean isAlwaysOntop;
 	public int minutesToUpdate;
 	public Point frameLocation;
-	
+
 	public Settings(boolean isAlwaysOntop, int minutesToUpdate, Point frameLocation) {
 		this.isAlwaysOntop = isAlwaysOntop;
 		this.minutesToUpdate = minutesToUpdate;
@@ -36,10 +36,10 @@ public class Settings {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
-	
+
 	public boolean save() {
 		try (Writer writer = new FileWriter(getLocation())) {
 			Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
@@ -48,12 +48,12 @@ public class Settings {
 			System.out.println("Error: Can't write file \"" + getLocation() + "\".");
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	public static String getLocation() {
-		return (new File("").equals(new File(File.separator))
-				? System.getProperty("user.home") : new File("").getAbsolutePath()) + File.separator + "Usage_Checker.json";
+		return (new File("").equals(new File(File.separator)) ? System.getProperty("user.home")
+				: new File("").getAbsolutePath()) + File.separator + "Usage_Checker.json";
 	}
 }
