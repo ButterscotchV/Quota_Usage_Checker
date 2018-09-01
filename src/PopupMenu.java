@@ -47,7 +47,7 @@ public class PopupMenu extends JPopupMenu {
 
 		addSeparator();
 
-		JCheckBoxMenuItem oneMinute = new JCheckBoxMenuItem("Update every 1 minute");
+		JCheckBoxMenuItem oneMinute = new JCheckBoxMenuItem("Update every minute");
 		oneMinute.setSelected(Main.settings.minutesToUpdate == 1);
 		oneMinute.addMouseListener(new MouseAdapter() {
 			@Override
