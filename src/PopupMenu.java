@@ -37,6 +37,9 @@ public class PopupMenu extends JPopupMenu {
 				@Override
 				public void mouseReleased(MouseEvent e) {
 					Main.setAlwaysOntop(!Main.isAlwaysOntop());
+					
+					Main.settings.isAlwaysOntop = Main.isAlwaysOntop();
+					Main.settings.save();
 				}
 			});
 			add(displayOver);
@@ -45,21 +48,21 @@ public class PopupMenu extends JPopupMenu {
 		addSeparator();
 
 		JCheckBoxMenuItem oneMinute = new JCheckBoxMenuItem("Update every 1 minute");
-		oneMinute.setSelected(Main.minutesToUpdate == 1);
+		oneMinute.setSelected(Main.settings.minutesToUpdate == 1);
 		oneMinute.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				Main.minutesToUpdate = 1;
+				Main.settings.minutesToUpdate = 1;
 			}
 		});
 		add(oneMinute);
 
 		JCheckBoxMenuItem fiveMinute = new JCheckBoxMenuItem("Update every 5 minutes");
-		fiveMinute.setSelected(Main.minutesToUpdate == 5);
+		fiveMinute.setSelected(Main.settings.minutesToUpdate == 5);
 		fiveMinute.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				Main.minutesToUpdate = 5;
+				Main.settings.minutesToUpdate = 5;
 			}
 		});
 		add(fiveMinute);
@@ -81,8 +84,7 @@ public class PopupMenu extends JPopupMenu {
 
 		for (Usage usage : sortedQuotas) {
 
-			JCheckBoxMenuItem usageOption = new JCheckBoxMenuItem("<html><font color=#" + Main.getUsageColourHex(usage) + ">" + usage.ipRange.start.toString() + " - "
-					+ usage.ipRange.end.toString() + "</font>" + (Main.mainUsage == usage ? " (Yours)" : ""));
+			JCheckBoxMenuItem usageOption = new JCheckBoxMenuItem("<html><font color=#" + Main.getUsageColourHex(usage) + ">" + Main.settings.getIPRangeLabel(usage.ipRange) + "</font>" + (Main.mainUsage == usage ? " (Yours)" : ""));
 			usageOption.setSelected(Main.curUsage == usage);
 			usageOption.addMouseListener(new MouseAdapter() {
 				@Override

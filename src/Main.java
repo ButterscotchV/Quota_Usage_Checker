@@ -1,10 +1,5 @@
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
@@ -33,19 +28,11 @@ public class Main {
 	private static final int START_DAY = 1; // The day that all data resets. 0
 	// is sunday, 6 is saturday
 
-	private static int lastX = Integer.MIN_VALUE;
-	private static int lastY = Integer.MIN_VALUE;
-	// private static boolean drag = true;
-	private static int grappleX = Integer.MIN_VALUE;
-	private static int grappleY = Integer.MIN_VALUE;
-
 	public static boolean update = false;
-
-	public static int minutesToUpdate = 1;
-
-	private static int locked = 0;
-
-	private static int[] lockCoord = new int[2];
+	
+	public static Settings settings = Settings.load();
+	
+	private static ScreenSnapper snapper;
 
 	public static void main(String[] args) {
 		try {
@@ -55,6 +42,12 @@ public class Main {
 		}
 
 		MouseAdapter mouseListener = new MouseAdapter() {
+			private int lastX = Integer.MIN_VALUE;
+			private int lastY = Integer.MIN_VALUE;
+			// private static boolean drag = true;
+			private int grappleX = Integer.MIN_VALUE;
+			private int grappleY = Integer.MIN_VALUE;
+			
 			@Override
 			public void mousePressed(MouseEvent e) {
 				doPop(e);
@@ -66,48 +59,30 @@ public class Main {
 				lastY = Integer.MIN_VALUE;
 				grappleX = Integer.MIN_VALUE;
 				grappleY = Integer.MIN_VALUE;
-				if (locked == 1) {
-					frame.setLocation(lockCoord[0], frame.getY());
-					locked = 0;
-					lockCoord[0] = 0;
-					lockCoord[1] = 0;
-				} else if (locked == 2) {
-					frame.setLocation(frame.getX(), lockCoord[1]);
-					locked = 0;
-					lockCoord[0] = 0;
-					lockCoord[1] = 0;
-				} else if (locked == 3) {
-					frame.setLocation(lockCoord[0], lockCoord[1]);
-					locked = 0;
-					lockCoord[0] = 0;
-					lockCoord[1] = 0;
-				}
+				
+				snapper.snapToScreen();
+				
+				settings.frameLocation = frame.getLocationOnScreen();
+				settings.save();
 
 				doPop(e);
 			}
 
 			private void doPop(MouseEvent e) {
-				System.out.println(e.isPopupTrigger());
+				//System.out.println(e.isPopupTrigger());
 				if (e.isPopupTrigger()) {
 					// drag = false;
 					PopupMenu menu = new PopupMenu();
 					menu.show(e.getComponent(), e.getX(), e.getY());
-				} else {
-					// drag = true;
 				}
-
-				new Settings(isAlwaysOntop(), minutesToUpdate, frame.getLocationOnScreen()).save();
 			}
-
-			// Range in which the window locks to screen edges in pixels, locking range (lr)
-			private int lr = 22;
-			private GraphicsDevice[] screenList = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				// Prints modifier (ex. 4 = Right Click, 8 = Scroll Wheel, 16 = Left Click)
 				// System.out.println(e.getModifiers());
 
+				// For dragging the window around the screen
 				if (e.getModifiers() != 4) {
 					int currentX = e.getXOnScreen();
 					int currentY = e.getYOnScreen();
@@ -133,143 +108,8 @@ public class Main {
 					lastX = currentX;
 					lastY = currentY;
 				}
-
-				// Code for Edge Locker
-				Component c = frame;
-
-				Window myWindow = new Window(frame);
-				GraphicsConfiguration config = myWindow.getGraphicsConfiguration();
-				GraphicsDevice myScreen = config.getDevice();
-				// matches against active display
-				for (GraphicsDevice gd : getScreenList()) {
-					// this will set the display to a new display if the window
-					// is moved
-					// to a new display
-					if (gd.equals(myScreen)) {
-						myScreen = gd;
-						break;
-					}
-				}
-
-				// Actual Screen Dimensions
-				int screenWidth = myScreen.getDefaultConfiguration().getBounds().width;
-				int screenHeight = myScreen.getDefaultConfiguration().getBounds().height;
-				// Component Width/Height
-				int cWidth = c.getWidth();
-				int cHeight = c.getHeight();
-				// setting offsets in case of different screen
-				int currentX = myScreen.getDefaultConfiguration().getBounds().x;
-				int currentY = myScreen.getDefaultConfiguration().getBounds().y;
-				// Top left (tl) corner coordinate
-				int[] tl = new int[] { currentX, currentY };
-				// Bottom right (br) corner coordinate
-				int[] br = new int[] { currentX + screenWidth, currentY + screenHeight };
-				// Top left (tl) corner coordinate of component (c)
-				int[] tlc = new int[] { c.getX(), c.getY() };
-				// Bottom right (br) corner coordinate of component (c)
-				int[] brc = new int[] { c.getX() + cWidth, c.getY() + cHeight };
-
-				// System.out.println(tl[0] + " " + tl[1] + " " + br[0] + " " + br[1]);
-
-				if (Math.abs(tlc[0] - tl[0]) <= lr || Math.abs(tlc[1] - tl[1]) <= lr || Math.abs(brc[0] - br[0]) <= lr
-						|| Math.abs(brc[1] - br[1]) <= lr) {
-					if (Math.abs(tlc[0] - tl[0]) <= lr) {
-						lockCoord[0] = tl[0];
-						locked = 1;
-					}
-
-					if (Math.abs(tlc[1] - tl[1]) <= lr) {
-						lockCoord[1] = tl[1];
-						if (locked == 1)
-							locked = 3;
-						else
-							locked = 2;
-					}
-
-					if (Math.abs(brc[0] - br[0]) <= lr) {
-						lockCoord[0] = br[0] - cWidth;
-						if (locked == 2)
-							locked = 3;
-						else
-							locked = 1;
-					}
-
-					if (Math.abs(brc[1] - br[1]) <= lr) {
-						lockCoord[1] = br[1] - cHeight;
-						if (locked == 1)
-							locked = 3;
-						else
-							locked = 2;
-					}
-				} else {
-					locked = 0;
-					lockCoord[0] = 0;
-					lockCoord[1] = 0;
-				}
-
-				/*
-				 * System.out.println(); System.out.println(lockCoord[0]);
-				 * System.out.println(lockCoord[1]);
-				 */
-			}
-
-			public GraphicsDevice[] getScreenList() {
-				return screenList;
 			}
 		};
-
-		/*
-		 * ComponentAdapter edgeSnapper = new ComponentAdapter() { private boolean
-		 * locked = false;
-		 * 
-		 * // feel free to modify; set based on my own preferences // incorporate as
-		 * user option? private int lockingRange = 30; private GraphicsDevice[]
-		 * screenList =
-		 * GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-		 * 
-		 * // clamping at 5 seems correct, 0 clamps at -5 beyond screen // boundary
-		 * 
-		 * @Override public void componentMoved(ComponentEvent evt) { // gets current
-		 * display device Window myWindow = new Window((Frame) evt.getComponent());
-		 * GraphicsConfiguration config = myWindow.getGraphicsConfiguration();
-		 * GraphicsDevice myScreen = config.getDevice(); // matches against active
-		 * display for (GraphicsDevice gd : getScreenList()) { // this will set the
-		 * display to a new display if the window // is moved // to a new display if
-		 * (gd.equals(myScreen)) { myScreen = gd; break; } }
-		 * 
-		 * // minimising calls to stack int screenWidth =
-		 * myScreen.getDefaultConfiguration().getBounds().width; int screenHeight =
-		 * myScreen.getDefaultConfiguration().getBounds().height; int compWidth =
-		 * evt.getComponent().getWidth(); int compHeight =
-		 * evt.getComponent().getHeight(); int nx = evt.getComponent().getX(); int ny =
-		 * evt.getComponent().getY(); // setting offsets in case of different screen int
-		 * currentX = myScreen.getDefaultConfiguration().getBounds().x; int currentY =
-		 * myScreen.getDefaultConfiguration().getBounds().y;
-		 * 
-		 * // see end of method // OR conditions seem to stabilise movement when close
-		 * to screen // edge if (locked || nx == currentX + 5 || ny == currentY + 5 ||
-		 * nx == currentX + screenWidth - compWidth - 5 || ny == currentY + screenHeight
-		 * - compHeight - 5) return;
-		 * 
-		 * // left if (nx < (currentX + sd) && nx > (currentX + 5)) { nx = currentX + 5;
-		 * }
-		 * 
-		 * // top if (ny < (currentY + sd) && ny > (currentY + 5)) { ny = currentY + 5;
-		 * }
-		 * 
-		 * // right if (nx > currentX + screenWidth - compWidth - sd && nx < currentX +
-		 * screenWidth - compWidth - 5) { nx = currentX + screenWidth - compWidth - 5; }
-		 * 
-		 * // bottom if (ny > currentY + screenHeight - compHeight - sd && ny < currentY
-		 * + screenHeight - compHeight - 5) { ny = currentY + screenHeight - compHeight
-		 * - 5; }
-		 * 
-		 * // make sure we don't get into a recursive loop when the // set location
-		 * generates more events locked = true; evt.getComponent().setLocation(nx, ny);
-		 * locked = false; }
-		 * 
-		 * public GraphicsDevice[] getScreenList() { return screenList; } };
-		 */
 
 		frame = new JFrame("Internet Usage");
 		frame.addMouseMotionListener(mouseListener);
@@ -280,13 +120,18 @@ public class Main {
 		frame.setLocationRelativeTo(null); // Starts window in centre of screen
 		frame.setLayout(null);
 		frame.setUndecorated(true);
-		// frame.addComponentListener(edgeSnapper);
+		
+		snapper = new ScreenSnapper(frame, 22); // Set up the screen snapper
 
-		Settings settings = Settings.load();
 		if (settings != null) {
+			settings.setMissing();
+			
 			setAlwaysOntop(settings.isAlwaysOntop);
-			minutesToUpdate = settings.minutesToUpdate;
 			frame.setLocation(settings.frameLocation);
+		}
+		else {
+			settings = new Settings(isAlwaysOntop(), 1, frame.getLocationOnScreen());
+			settings.save();
 		}
 
 		text = new JLabel();
@@ -301,7 +146,7 @@ public class Main {
 
 		bar = new JProgressBar();
 		bar.setBounds(16, 16, WIDTH - 32, 20);
-		bar.setToolTipText("Auto updates every " + minutesToUpdate + " minute(s)");
+		bar.setToolTipText("Auto updates every " + settings.minutesToUpdate + " minute(s)");
 		bar.addMouseMotionListener(mouseListener);
 		bar.addMouseListener(mouseListener);
 		frame.add(bar);
@@ -429,12 +274,12 @@ public class Main {
 				}
 			}
 
-			int secondsToWait = 60 * minutesToUpdate; // Normal: 60 * 5
-			int secondsPassed = 0;
+			double secondsToWait = 60 * settings.minutesToUpdate; // Normal: 60 * 5
+			double secondsPassed = 0;
 
 			while (secondsToWait > secondsPassed && !update) {
 				try {
-					bar.setToolTipText("Auto updates every " + minutesToUpdate + " minute(s)");
+					bar.setToolTipText("Auto updates every " + settings.minutesToUpdate + " minute(s)");
 
 					/*
 					 * In-case it loses focus I've had this happen many times and I'm not sure
