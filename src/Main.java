@@ -530,11 +530,11 @@ public class Main {
 	}
 
 	public static String getUsageColourHex(Usage usage) {
-		Color from = curUsage.percentOfTotalSpeed < 50 ? LOW_USAGE : MEDIUM_USAGE;
-		Color to = curUsage.percentOfTotalSpeed < 50 ? MEDIUM_USAGE : HIGH_USAGE;
+		Color from = usage.percentOfTotalSpeed < 50 ? LOW_USAGE : MEDIUM_USAGE;
+		Color to = usage.percentOfTotalSpeed < 50 ? MEDIUM_USAGE : HIGH_USAGE;
 
-		float percentFromTo = (float) ((curUsage.percentOfTotalSpeed < 50 ? curUsage.percentOfTotalSpeed
-				: curUsage.percentOfTotalSpeed - 50) * 2);
+		float percentFromTo = (float) ((usage.percentOfTotalSpeed < 50 ? usage.percentOfTotalSpeed
+				: usage.percentOfTotalSpeed - 50) * 2);
 
 		return colorToHex(colourFromPercentage(from, to, percentFromTo));
 	}
