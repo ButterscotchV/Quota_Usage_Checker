@@ -523,20 +523,22 @@ public class Main {
 		System.out.println("Speed: " + curUsage.downloadSpeed);
 		System.out.println("Percent of Total Speed: " + curUsage.percentOfTotalSpeed);
 
+		updateBar((int) percentage);
+		updateText("<html>Used: " + percentWithPrecision(curUsage.downloadUsed, BYTE_IN_A_GIG, 1) + "/"
+				+ percentWithPrecision(curUsage.downloadTotal, BYTE_IN_A_GIG, 1) + "G <font color=#" + getUsageColourHex(curUsage) + ">("
+				+ percentWithPrecision(curUsage.downloadSpeed, BYTE_IN_A_MB, 1) + " mb/s)</font>");
+	}
+
+	public static String getUsageColourHex(Usage usage) {
 		Color from = curUsage.percentOfTotalSpeed < 50 ? LOW_USAGE : MEDIUM_USAGE;
 		Color to = curUsage.percentOfTotalSpeed < 50 ? MEDIUM_USAGE : HIGH_USAGE;
 
 		float percentFromTo = (float) ((curUsage.percentOfTotalSpeed < 50 ? curUsage.percentOfTotalSpeed
 				: curUsage.percentOfTotalSpeed - 50) * 2);
 
-		String hexColour = colorToHex(colourFromPercentage(from, to, percentFromTo));
-
-		updateBar((int) percentage);
-		updateText("<html>Used: " + percentWithPrecision(curUsage.downloadUsed, BYTE_IN_A_GIG, 1) + "/"
-				+ percentWithPrecision(curUsage.downloadTotal, BYTE_IN_A_GIG, 1) + "G <font color=#" + hexColour + ">("
-				+ percentWithPrecision(curUsage.downloadSpeed, BYTE_IN_A_MB, 1) + " mb/s)</font>");
+		return colorToHex(colourFromPercentage(from, to, percentFromTo));
 	}
-
+	
 	public static Color colourFromPercentage(Color to, Color from, float percent) {
 		return colourFromDecimal(to, from, percent / 100);
 	}

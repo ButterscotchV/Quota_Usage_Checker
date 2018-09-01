@@ -81,8 +81,8 @@ public class PopupMenu extends JPopupMenu {
 
 		for (Usage usage : sortedQuotas) {
 
-			JCheckBoxMenuItem usageOption = new JCheckBoxMenuItem(usage.ipRange.start.toString() + " - "
-					+ usage.ipRange.end.toString() + (Main.mainUsage == usage ? " (Yours)" : ""));
+			JCheckBoxMenuItem usageOption = new JCheckBoxMenuItem("<html><font color=#" + Main.getUsageColourHex(usage) + ">" + usage.ipRange.start.toString() + " - "
+					+ usage.ipRange.end.toString() + "</font>" + (Main.mainUsage == usage ? " (Yours)" : ""));
 			usageOption.setSelected(Main.curUsage == usage);
 			usageOption.addMouseListener(new MouseAdapter() {
 				@Override
