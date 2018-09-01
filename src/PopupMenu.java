@@ -97,7 +97,7 @@ public class PopupMenu extends JPopupMenu {
 
 			JCheckBoxMenuItem usageOption = new JCheckBoxMenuItem("<html><font color=#" + Main.getUsageColourHex(usage)
 					+ ">" + Main.settings.getIPRangeLabel(usage.ipRange) + "</font>"
-					+ (Main.mainUsage == usage ? " (Yours)" : ""));
+					+ (Main.mainUsage == usage ? " (Yours)" : "") + " " + usage.getDownloadSpeedString());
 			usageOption.setSelected(Main.curUsage == usage);
 			usageOption.addMouseListener(new MouseAdapter() {
 				@Override

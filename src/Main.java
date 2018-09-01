@@ -369,9 +369,7 @@ public class Main {
 
 		updateBar((int) percentage);
 		updateText("<html>Used: " + percentWithPrecision(curUsage.downloadUsed, BYTE_IN_A_GIG, 1) + "/"
-				+ percentWithPrecision(curUsage.downloadTotal, BYTE_IN_A_GIG, 1) + "G <font color=#"
-				+ getUsageColourHex(curUsage) + ">(" + percentWithPrecision(curUsage.downloadSpeed, BYTE_IN_A_MB, 1)
-				+ " mb/s)</font>");
+				+ percentWithPrecision(curUsage.downloadTotal, BYTE_IN_A_GIG, 1) + "G " + curUsage.getDownloadSpeedString());
 	}
 
 	public static String getUsageColourHex(Usage usage) {

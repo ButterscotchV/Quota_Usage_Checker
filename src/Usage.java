@@ -26,4 +26,10 @@ public class Usage {
 	public static Usage createUsage(String ipRange, long downloadUsed, long downloadTotal, Usage lastUsage) {
 		return new Usage(new IPRange(ipRange), downloadUsed, downloadTotal, lastUsage);
 	}
+	
+	public String getDownloadSpeedString() {
+		return "<font color=#"
+				+ Main.getUsageColourHex(this) + ">(" + Main.percentWithPrecision(downloadSpeed, Main.BYTE_IN_A_MB, 1)
+				+ " MB/s)</font>";
+	}
 }
