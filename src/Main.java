@@ -29,9 +29,9 @@ public class Main {
 	// is sunday, 6 is saturday
 
 	public static boolean update = false;
-	
+
 	public static Settings settings = Settings.load();
-	
+
 	private static ScreenSnapper snapper;
 
 	public static void main(String[] args) {
@@ -47,7 +47,7 @@ public class Main {
 			// private static boolean drag = true;
 			private int grappleX = Integer.MIN_VALUE;
 			private int grappleY = Integer.MIN_VALUE;
-			
+
 			@Override
 			public void mousePressed(MouseEvent e) {
 				doPop(e);
@@ -59,9 +59,9 @@ public class Main {
 				lastY = Integer.MIN_VALUE;
 				grappleX = Integer.MIN_VALUE;
 				grappleY = Integer.MIN_VALUE;
-				
+
 				snapper.snapToScreen();
-				
+
 				settings.frameLocation = frame.getLocationOnScreen();
 				settings.save();
 
@@ -69,7 +69,7 @@ public class Main {
 			}
 
 			private void doPop(MouseEvent e) {
-				//System.out.println(e.isPopupTrigger());
+				// System.out.println(e.isPopupTrigger());
 				if (e.isPopupTrigger()) {
 					// drag = false;
 					PopupMenu menu = new PopupMenu();
@@ -120,16 +120,15 @@ public class Main {
 		frame.setLocationRelativeTo(null); // Starts window in centre of screen
 		frame.setLayout(null);
 		frame.setUndecorated(true);
-		
+
 		snapper = new ScreenSnapper(frame, 22); // Set up the screen snapper
 
 		if (settings != null) {
 			settings.setMissing();
-			
+
 			setAlwaysOntop(settings.isAlwaysOntop);
 			frame.setLocation(settings.frameLocation);
-		}
-		else {
+		} else {
 			settings = new Settings(isAlwaysOntop(), 1, frame.getLocationOnScreen());
 			settings.save();
 		}
@@ -370,8 +369,9 @@ public class Main {
 
 		updateBar((int) percentage);
 		updateText("<html>Used: " + percentWithPrecision(curUsage.downloadUsed, BYTE_IN_A_GIG, 1) + "/"
-				+ percentWithPrecision(curUsage.downloadTotal, BYTE_IN_A_GIG, 1) + "G <font color=#" + getUsageColourHex(curUsage) + ">("
-				+ percentWithPrecision(curUsage.downloadSpeed, BYTE_IN_A_MB, 1) + " mb/s)</font>");
+				+ percentWithPrecision(curUsage.downloadTotal, BYTE_IN_A_GIG, 1) + "G <font color=#"
+				+ getUsageColourHex(curUsage) + ">(" + percentWithPrecision(curUsage.downloadSpeed, BYTE_IN_A_MB, 1)
+				+ " mb/s)</font>");
 	}
 
 	public static String getUsageColourHex(Usage usage) {
@@ -383,7 +383,7 @@ public class Main {
 
 		return colorToHex(colourFromPercentage(from, to, percentFromTo));
 	}
-	
+
 	public static Color colourFromPercentage(Color to, Color from, float percent) {
 		return colourFromDecimal(to, from, percent / 100);
 	}

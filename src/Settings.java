@@ -35,20 +35,20 @@ public class Settings {
 
 		return ipRange.toString();
 	}
-	
+
 	public void addIPRangeLabel(IPRange ipRange, String label) {
 		if (ipRange == null || label == null) {
 			return;
 		}
-		
+
 		ipRangeLabels.put(ipRange.toString(), label);
 	}
-	
+
 	public void setMissing() {
 		if (ipRangeLabels == null) {
 			ipRangeLabels = new HashMap<String, String>();
 		}
-		
+
 		if (frameLocation == null) {
 			frameLocation = new Point(0, 0);
 		}

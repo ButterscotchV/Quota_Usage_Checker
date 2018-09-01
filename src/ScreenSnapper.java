@@ -6,10 +6,7 @@ import java.awt.Window;
 
 public class ScreenSnapper {
 	public enum SnapStatus {
-		UNLOCKED,
-		X_LOCK,
-		Y_LOCK,
-		X_AND_Y_LOCK,
+		UNLOCKED, X_LOCK, Y_LOCK, X_AND_Y_LOCK
 	}
 
 	public class SnapPos {
@@ -72,13 +69,13 @@ public class ScreenSnapper {
 		int[] brc = new int[] { frame.getX() + cWidth, frame.getY() + cHeight };
 
 		// System.out.println(tl[0] + " " + tl[1] + " " + br[0] + " " + br[1]);
-		
+
 		SnapStatus locked = SnapStatus.UNLOCKED;
 		int x = 0;
 		int y = 0;
-		
-		if (Math.abs(tlc[0] - tl[0]) <= snapDist || Math.abs(tlc[1] - tl[1]) <= snapDist || Math.abs(brc[0] - br[0]) <= snapDist
-				|| Math.abs(brc[1] - br[1]) <= snapDist) {
+
+		if (Math.abs(tlc[0] - tl[0]) <= snapDist || Math.abs(tlc[1] - tl[1]) <= snapDist
+				|| Math.abs(brc[0] - br[0]) <= snapDist || Math.abs(brc[1] - br[1]) <= snapDist) {
 			if (Math.abs(tlc[0] - tl[0]) <= snapDist) {
 				x = tl[0];
 				locked = SnapStatus.X_LOCK;
@@ -108,14 +105,16 @@ public class ScreenSnapper {
 					locked = SnapStatus.Y_LOCK;
 			}
 		}
-		
+
 		return new SnapPos(x, y, locked);
 	}
 
 	public void movetoSnapPos(SnapPos pos) {
-		int x = (pos.snapStatus == SnapStatus.X_LOCK || pos.snapStatus == SnapStatus.X_AND_Y_LOCK ? pos.x : frame.getX());
-		int y = (pos.snapStatus == SnapStatus.Y_LOCK || pos.snapStatus == SnapStatus.X_AND_Y_LOCK ? pos.y : frame.getY());
-		
+		int x = (pos.snapStatus == SnapStatus.X_LOCK || pos.snapStatus == SnapStatus.X_AND_Y_LOCK ? pos.x
+				: frame.getX());
+		int y = (pos.snapStatus == SnapStatus.Y_LOCK || pos.snapStatus == SnapStatus.X_AND_Y_LOCK ? pos.y
+				: frame.getY());
+
 		frame.setLocation(x, y);
 	}
 

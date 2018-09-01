@@ -37,7 +37,7 @@ public class PopupMenu extends JPopupMenu {
 				@Override
 				public void mouseReleased(MouseEvent e) {
 					Main.setAlwaysOntop(!Main.isAlwaysOntop());
-					
+
 					Main.settings.isAlwaysOntop = Main.isAlwaysOntop();
 					Main.settings.save();
 				}
@@ -69,6 +69,17 @@ public class PopupMenu extends JPopupMenu {
 
 		addSeparator();
 
+		JMenuItem displayOver = new JMenuItem("Rename Range");
+		displayOver.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				new TextboxPopup(Main.curUsage.ipRange);
+			}
+		});
+		add(displayOver);
+
+		addSeparator();
+
 		add(new JLabel("Available Ranges")); // Header
 
 		ArrayList<Usage> sortedQuotas = new ArrayList<Usage>(Main.quotas);
@@ -84,7 +95,9 @@ public class PopupMenu extends JPopupMenu {
 
 		for (Usage usage : sortedQuotas) {
 
-			JCheckBoxMenuItem usageOption = new JCheckBoxMenuItem("<html><font color=#" + Main.getUsageColourHex(usage) + ">" + Main.settings.getIPRangeLabel(usage.ipRange) + "</font>" + (Main.mainUsage == usage ? " (Yours)" : ""));
+			JCheckBoxMenuItem usageOption = new JCheckBoxMenuItem("<html><font color=#" + Main.getUsageColourHex(usage)
+					+ ">" + Main.settings.getIPRangeLabel(usage.ipRange) + "</font>"
+					+ (Main.mainUsage == usage ? " (Yours)" : ""));
 			usageOption.setSelected(Main.curUsage == usage);
 			usageOption.addMouseListener(new MouseAdapter() {
 				@Override
