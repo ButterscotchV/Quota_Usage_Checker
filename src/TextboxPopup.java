@@ -16,6 +16,9 @@ public class TextboxPopup {
 	public static final int HEIGHT = 124;
 	public static final int WIDTH_SPACING = 20;
 	public static final int TEXT_SPACING = 17;
+	
+	public static final int OS_COMPONENT_DECORATIONS = (OsUtil.getOSType() == EnumOS.WINDOWS ? 2 : 0);
+	public static final int OS_TXTBOX_DECORATIONS = (OsUtil.getOSType() == EnumOS.WINDOWS ? 4 : 0) + OS_COMPONENT_DECORATIONS;
 
 	public TextboxPopup(IPRange range) {
 		frame = new JFrame("Rename range \"" + Main.settings.getIPRangeLabel(range) + "\"");
@@ -28,7 +31,7 @@ public class TextboxPopup {
 
 		txtBox = new JTextField(Main.settings.getIPRangeLabel(range));
 		frame.add(txtBox);
-		txtBox.setBounds(WIDTH_SPACING, TEXT_SPACING, WIDTH - (WIDTH_SPACING * 2), 28);
+		txtBox.setBounds(WIDTH_SPACING, TEXT_SPACING, WIDTH - (WIDTH_SPACING * 2) - OS_TXTBOX_DECORATIONS, 28);
 		txtBox.addKeyListener(new KeyListener() {
 			@Override
 			public void keyTyped(KeyEvent e) {
@@ -53,7 +56,7 @@ public class TextboxPopup {
 		but = new JButton("Accept");
 		frame.add(but);
 		but.setEnabled(isNameOkay(txtBox.getText()));
-		but.setBounds((WIDTH / 2) - (80 / 2), TEXT_SPACING * 3, 80, 28);
+		but.setBounds((WIDTH / 2) - (80 / 2) - (OS_COMPONENT_DECORATIONS / 2), TEXT_SPACING * 3, 80, 28);
 		but.addMouseListener(new MouseListener() {
 
 			@Override
