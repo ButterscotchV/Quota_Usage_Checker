@@ -168,46 +168,57 @@ public class Main {
 				long used = -1;
 				long max = -1;
 				IPAddress ip = null;
-				IPRange range = null;
+				ArrayList<IPRange> ranges = new ArrayList<IPRange>();
 				String line;
 				while ((line = br.readLine()) != null) {
 					if (ip != null) { // finds max and used
 
 						if (line.matches(IP_RANGE_REGEX)) {
-							// System.out.println(line);
+							System.out.println(line);
 
 							if (line.split("\\[").length == 4) {
 								String ipRange = line.split("\\[")[2].split("\\]")[0].replaceAll("\"", "").trim();
-								range = new IPRange(ipRange);
-								// System.out.println(ipRange);
+								String[] ipRanges = ipRange.split(",");
+								
+								for (String ipRangeEntry : ipRanges) {
+									IPRange range = new IPRange(ipRangeEntry);
+									if (!rangesContains(ranges, range)) {
+										ranges.add(range);
+									}
+									// System.out.println(ipRange);
+								}
 							}
-
+							
 							if (line.startsWith("quotaUsed[") && line.split("\\[").length == 4) {
-								String uss = line.split(",")[1];
+								String values = line.split("\\[")[3].split("\\]")[0].replaceAll("\"", "").trim();
+								String uss = values.split(",")[1];
 								uss = uss.substring(1, uss.length());
 								used = Long.parseLong(uss);
 
 							} else if (line.startsWith("quotaLimits[") && line.split("\\[").length == 4) {
-								String maxx = line.split(",")[1];
+								String values = line.split("\\[")[3].split("\\]")[0].replaceAll("\"", "").trim();
+								String maxx = values.split(",")[1];
 								maxx = maxx.substring(1, maxx.length());
 								max = Long.parseLong(maxx);
 							}
 
 							// System.out.println(line);
 
-							if (used != -1 && max != -1 && range != null) {
-								// System.out.println(range);
+							if (used != -1 && max != -1 && !ranges.isEmpty()) {
+								for (IPRange range : ranges) {
+									// System.out.println(range);
 
-								Usage usage = Usage.createUsage(range, used, max, findUsage(range, lastQuotas));
-								quotas.add(usage);
+									Usage usage = Usage.createUsage(range, used, max, findUsage(range, lastQuotas));
+									quotas.add(usage);
 
-								if (range.isIPWithinRange(ip)) {
-									mainUsage = usage;
+									if (range.isIPWithinRange(ip)) {
+										mainUsage = usage;
+									}
 								}
-
+								
 								used = -1;
 								max = -1;
-								range = null;
+								ranges.clear();
 							}
 						}
 
@@ -296,6 +307,16 @@ public class Main {
 				}
 			}
 		}
+	}
+	
+	public static boolean rangesContains(ArrayList<IPRange> ranges, IPRange object) {
+		for (IPRange range : ranges) {
+			if (range.equals(object)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	private static boolean hasWarnedOver = false;
