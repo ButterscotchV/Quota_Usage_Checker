@@ -16,13 +16,13 @@ import com.google.gson.reflect.TypeToken;
 
 public class Settings {
 	public boolean isAlwaysOntop;
-	public double minutesToUpdate;
+	public double secondsToUpdate;
 	public Point frameLocation;
 	public HashMap<String, String> ipRangeLabels = new HashMap<String, String>();
 
-	public Settings(boolean isAlwaysOntop, int minutesToUpdate, Point frameLocation) {
+	public Settings(boolean isAlwaysOntop, int secondsToUpdate, Point frameLocation) {
 		this.isAlwaysOntop = isAlwaysOntop;
-		this.minutesToUpdate = minutesToUpdate;
+		this.secondsToUpdate = secondsToUpdate;
 		this.frameLocation = frameLocation;
 	}
 

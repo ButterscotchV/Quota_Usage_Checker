@@ -1,4 +1,3 @@
-
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -24,6 +23,7 @@ public class Main {
 
 	private static final int HEIGHT = 70; // + OsUtil.getOSType().getDisplayOffset()
 	private static final int WIDTH = 200;
+	private static final long CHECK_RESOLUTION = 250;
 
 	private static final int START_DAY = 1; // The day that all data resets. 0
 	// is sunday, 6 is saturday
@@ -74,6 +74,21 @@ public class Main {
 					// drag = false;
 					PopupMenu menu = new PopupMenu();
 					menu.show(e.getComponent(), e.getX(), e.getY());
+					
+					new Thread(() -> {
+						while (menu.isVisible()) {
+							try {
+								Thread.sleep(CHECK_RESOLUTION);
+								menu.updateText();
+								
+								//System.out.println("Updating menu...");
+							} catch (InterruptedException e1) {
+								e1.printStackTrace();
+							}
+						}
+						
+						//System.out.println("Exiting menu updater...");
+					}).start();
 				}
 			}
 
@@ -109,6 +124,11 @@ public class Main {
 					lastY = currentY;
 				}
 			}
+			
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				bar.setToolTipText("Auto updates every " + settings.secondsToUpdate + " second(s)");
+			}
 		};
 
 		frame = new JFrame("Internet Usage");
@@ -118,7 +138,7 @@ public class Main {
 		frame.setSize(WIDTH, HEIGHT);
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null); // Starts window in centre of screen
-		frame.setLayout(null);
+		frame.getContentPane().setLayout(null);
 		frame.setUndecorated(true);
 
 		snapper = new ScreenSnapper(frame, 22); // Set up the screen snapper
@@ -136,25 +156,25 @@ public class Main {
 		text = new JLabel();
 		text.addMouseMotionListener(mouseListener);
 		text.addMouseListener(mouseListener);
-		frame.add(text);
+		frame.getContentPane().add(text);
 
 		bText = new JLabel();
 		bText.addMouseMotionListener(mouseListener);
 		bText.addMouseListener(mouseListener);
-		frame.add(bText);
+		frame.getContentPane().add(bText);
 
 		bar = new JProgressBar();
 		bar.setBounds(16, 16, WIDTH - 32, 20);
-		bar.setToolTipText("Auto updates every " + settings.minutesToUpdate + " minute(s)");
+		bar.setToolTipText("Auto updates every " + settings.secondsToUpdate + " second(s)");
 		bar.addMouseMotionListener(mouseListener);
 		bar.addMouseListener(mouseListener);
-		frame.add(bar);
+		frame.getContentPane().add(bar);
 
 		frame.setVisible(true);
 
 		while (true) {
 			update = false;
-			updateText("Updating Internet Usage");
+			updateBarText("<html><font color=\"#4191E1\">" + bText.getText() + "</font></html>");
 
 			try {
 				URL url = new URL("http://192.168.1.2/");
@@ -174,7 +194,7 @@ public class Main {
 					if (ip != null) { // finds max and used
 
 						if (line.matches(IP_RANGE_REGEX)) {
-							System.out.println(line);
+							//System.out.println(line);
 
 							if (line.split("\\[").length == 4) {
 								String ipRange = line.split("\\[")[2].split("\\]")[0].replaceAll("\"", "").trim();
@@ -227,7 +247,7 @@ public class Main {
 						String[] split1 = line.split("\"");
 						ip = new IPAddress(split1[1]);
 
-						System.out.println("Connected IP: " + ip);
+						//System.out.println("Connected IP: " + ip);
 					}
 				}
 
@@ -240,7 +260,7 @@ public class Main {
 				// If speed is over 0, calculate percentages
 				if (totalSpeed > 0) {
 					for (Usage usage : quotas) {
-						usage.percentOfTotalSpeed = percentWithPrecision(usage.downloadSpeed, totalSpeed, 100);
+						usage.percentOfTotalSpeed = percentWithPrecision(Math.round(usage.downloadSpeed), totalSpeed, 100);
 					}
 				}
 
@@ -284,13 +304,11 @@ public class Main {
 				}
 			}
 
-			double secondsToWait = 60 * settings.minutesToUpdate; // Normal: 60 * 5
-			double secondsPassed = 0;
+			double millisecondsToWait = 1000 * settings.secondsToUpdate; // Normal: 60000 * 5
+			double millisecondsPassed = 0;
 
-			while (secondsToWait > secondsPassed && !update) {
+			while (millisecondsToWait > millisecondsPassed && !update) {
 				try {
-					bar.setToolTipText("Auto updates every " + settings.minutesToUpdate + " minute(s)");
-
 					/*
 					 * In-case it loses focus I've had this happen many times and I'm not sure
 					 * what's causing it But this might fix it
@@ -300,8 +318,8 @@ public class Main {
 					 * This minimizes fullscreen windows, don't use this
 					 */
 
-					Thread.sleep(1000);
-					secondsPassed++;
+					Thread.sleep(CHECK_RESOLUTION);
+					millisecondsPassed += CHECK_RESOLUTION;
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -326,6 +344,8 @@ public class Main {
 	public static final long BYTE_IN_A_MB = 1024 * 1024;
 	public static final long BYTE_IN_A_KB = 1024;
 	private static final double PRECISION = 100;
+	
+	public static final long NANOS_IN_A_SECOND = 1000000000;
 
 	private static final Color LOW_USAGE = new Color(67, 181, 129);
 	private static final Color MEDIUM_USAGE = new Color(250, 166, 26);
@@ -378,17 +398,21 @@ public class Main {
 	public static double percentWithPrecision(long numerator, long denominator, int percentModifier) {
 		return Math.round(((double) numerator / (double) denominator) * percentModifier * PRECISION) / PRECISION;
 	}
+	
+	public static double roundToPrecision(double number) {
+		return Math.round(number * PRECISION) / PRECISION;
+	}
 
 	public static void updatePercentage() {
 		percentage = percentWithPrecision(curUsage.downloadUsed, curUsage.downloadTotal, 100);
 
-		System.out.println("Used Data: " + curUsage.downloadUsed);
-		System.out.println("Maximum Data: " + curUsage.downloadTotal);
-		System.out.println("Percent Used: " + percentage);
-		System.out.println("Speed: " + curUsage.downloadSpeed);
-		System.out.println("Percent of Total Speed: " + curUsage.percentOfTotalSpeed);
+		//System.out.println("Used Data: " + curUsage.downloadUsed);
+		//System.out.println("Maximum Data: " + curUsage.downloadTotal);
+		//System.out.println("Percent Used: " + percentage);
+		//System.out.println("Speed: " + curUsage.downloadSpeed);
+		//System.out.println("Percent of Total Speed: " + curUsage.percentOfTotalSpeed);
 
-		updateBar((int) percentage);
+		updateBar(percentage);
 		updateText("<html>Used: " + percentWithPrecision(curUsage.downloadUsed, BYTE_IN_A_GIG, 1) + "/"
 				+ percentWithPrecision(curUsage.downloadTotal, BYTE_IN_A_GIG, 1) + "G " + curUsage.getDownloadSpeedString());
 	}
@@ -422,10 +446,14 @@ public class Main {
 		return rgb.substring(2, rgb.length());
 	}
 
-	public static void updateBar(int percent) {
-		bar.setValue(percent);
-
-		putTextCentered(WIDTH, percent + "%", bText, 15);
+	public static void updateBar(double percent) {
+		bar.setValue((int)Math.round(percent));
+		
+		putTextCentered(WIDTH, roundToPrecision(percent) + "%", bText, 15);
+	}
+	
+	public static void updateBarText(String newText) {
+		putTextCentered(WIDTH, newText, bText, 15);
 	}
 
 	public static void updateText(String newText) {

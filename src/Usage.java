@@ -1,9 +1,8 @@
-
 public class Usage {
 	public final IPRange ipRange;
 	public final long downloadUsed;
 	public final long downloadTotal;
-	public final long downloadSpeed;
+	public final double downloadSpeed;
 	public final long timestamp;
 	public double percentOfTotalSpeed = 0;
 
@@ -11,12 +10,18 @@ public class Usage {
 		this.ipRange = ipRange;
 		this.downloadUsed = downloadUsed;
 		this.downloadTotal = downloadTotal;
-		this.timestamp = System.currentTimeMillis() / 1000; // Current time in seconds
+		this.timestamp = System.nanoTime(); // Current time in nanoseconds
 
-		if (lastUsage != null)
-			this.downloadSpeed = (downloadUsed - lastUsage.downloadUsed) / (timestamp - lastUsage.timestamp);
-		else
+		if (lastUsage != null) {
+			double deltaSeconds = getTimestampSeconds() - lastUsage.getTimestampSeconds();
+			
+			if (deltaSeconds > 0)
+				this.downloadSpeed = ((downloadUsed - lastUsage.downloadUsed) / deltaSeconds);
+			else
+				this.downloadSpeed = 0;
+		} else {
 			this.downloadSpeed = 0;
+		}
 	}
 
 	public static Usage createUsage(IPRange ipRange, long downloadUsed, long downloadTotal, Usage lastUsage) {
@@ -29,7 +34,11 @@ public class Usage {
 	
 	public String getDownloadSpeedString() {
 		return "<font color=#"
-				+ Main.getUsageColourHex(this) + ">(" + Main.percentWithPrecision(downloadSpeed, Main.BYTE_IN_A_MB, 1)
+				+ Main.getUsageColourHex(this) + ">(" + Main.percentWithPrecision(Math.round(downloadSpeed), Main.BYTE_IN_A_MB, 1)
 				+ " MB/s)</font>";
+	}
+	
+	public double getTimestampSeconds() {
+		return timestamp / (double)Main.NANOS_IN_A_SECOND;
 	}
 }

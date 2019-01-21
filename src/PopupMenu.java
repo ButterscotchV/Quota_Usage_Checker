@@ -11,6 +11,8 @@ import javax.swing.JPopupMenu;
 public class PopupMenu extends JPopupMenu {
 	private static final long serialVersionUID = 5589015536038692108L;
 
+	public ArrayList<JCheckBoxMenuItemUsage> usageOptions = new ArrayList<JCheckBoxMenuItemUsage>();
+	
 	public PopupMenu() {
 		JMenuItem update = new JMenuItem("Update");
 		update.addMouseListener(new MouseAdapter() {
@@ -48,21 +50,21 @@ public class PopupMenu extends JPopupMenu {
 		addSeparator();
 
 		JCheckBoxMenuItem oneMinute = new JCheckBoxMenuItem("Update every minute");
-		oneMinute.setSelected(Main.settings.minutesToUpdate == 1);
+		oneMinute.setSelected(Main.settings.secondsToUpdate == 60);
 		oneMinute.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				Main.settings.minutesToUpdate = 1;
+				Main.settings.secondsToUpdate = 60;
 			}
 		});
 		add(oneMinute);
 
 		JCheckBoxMenuItem fiveMinute = new JCheckBoxMenuItem("Update every 5 minutes");
-		fiveMinute.setSelected(Main.settings.minutesToUpdate == 5);
+		fiveMinute.setSelected(Main.settings.secondsToUpdate == 300);
 		fiveMinute.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				Main.settings.minutesToUpdate = 5;
+				Main.settings.secondsToUpdate = 300;
 			}
 		});
 		add(fiveMinute);
@@ -95,18 +97,26 @@ public class PopupMenu extends JPopupMenu {
 
 		for (Usage usage : sortedQuotas) {
 
-			JCheckBoxMenuItem usageOption = new JCheckBoxMenuItem("<html><font color=#" + Main.getUsageColourHex(usage)
-					+ ">" + Main.settings.getIPRangeLabel(usage.ipRange) + "</font>"
-					+ (Main.mainUsage == usage ? " (Yours)" : "") + " " + usage.getDownloadSpeedString());
+			JCheckBoxMenuItemUsage usageOption = new JCheckBoxMenuItemUsage(usage);
 			usageOption.setSelected(Main.curUsage == usage);
 			usageOption.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseReleased(MouseEvent e) {
-					Main.curUsage = usage;
+					Main.curUsage = usageOption.usage;
 					Main.updatePercentage();
 				}
 			});
+			
+			usageOptions.add(usageOption);
+			
 			add(usageOption);
+		}
+	}
+	
+	public void updateText() {
+		for (JCheckBoxMenuItemUsage usageOption : usageOptions) {
+			usageOption.updateText();
+			usageOption.setSelected(Main.curUsage == usageOption.usage);
 		}
 	}
 }
