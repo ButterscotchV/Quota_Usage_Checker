@@ -304,7 +304,7 @@ public class Main {
 				}
 			}
 
-			double millisecondsToWait = 1000 * settings.secondsToUpdate; // Normal: 60000 * 5
+			double millisecondsToWait = 1000 * settings.secondsToUpdate; // Normal: 1000 * 300
 			double millisecondsPassed = 0;
 
 			while (millisecondsToWait > millisecondsPassed && !update) {

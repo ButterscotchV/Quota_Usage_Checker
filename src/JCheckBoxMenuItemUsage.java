@@ -16,15 +16,27 @@ public class JCheckBoxMenuItemUsage extends JCheckBoxMenuItem {
 		+ (Main.mainUsage == usage ? " (Yours)" : "") + " " + usage.getDownloadSpeedString();
 	}
 	
-	public void updateUsage() {
+	public boolean updateUsage() {
 		Usage newUsage = Main.findUsage(usage);
 		
 		if (newUsage != null)
+		{
 			usage = newUsage;
+			
+			return true;
+		}
+		
+		return false;
 	}
 	
-	public void updateText() {
-		updateUsage();
-		setText(getUsageEntry(usage));
+	public boolean updateText() {
+		if (updateUsage())
+		{
+			setText(getUsageEntry(usage));
+			
+			return true;
+		}
+		
+		return false;
 	}
 }

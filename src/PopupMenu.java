@@ -86,7 +86,6 @@ public class PopupMenu extends JPopupMenu {
 
 		ArrayList<Usage> sortedQuotas = new ArrayList<Usage>(Main.quotas);
 		sortedQuotas.sort(new Comparator<Usage>() {
-
 			@Override
 			public int compare(Usage o1, Usage o2) {
 				return (o1.ipRange.end.equals(o2.ipRange.start) ? 0
@@ -96,7 +95,6 @@ public class PopupMenu extends JPopupMenu {
 		});
 
 		for (Usage usage : sortedQuotas) {
-
 			JCheckBoxMenuItemUsage usageOption = new JCheckBoxMenuItemUsage(usage);
 			usageOption.setSelected(Main.curUsage == usage);
 			usageOption.addMouseListener(new MouseAdapter() {
@@ -116,7 +114,13 @@ public class PopupMenu extends JPopupMenu {
 	public void updateText() {
 		for (JCheckBoxMenuItemUsage usageOption : usageOptions) {
 			usageOption.updateText();
-			usageOption.setSelected(Main.curUsage == usageOption.usage);
+			
+			boolean isSelected = Main.curUsage == usageOption.usage;
+			
+			if (isSelected && !usageOption.isSelected())
+				usageOption.setSelected(true);
+			else if (!isSelected && usageOption.isSelected())
+				usageOption.setSelected(false);
 		}
 	}
 }
