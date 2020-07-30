@@ -5,6 +5,7 @@
     <artifactId>Usage_Checker</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Usage Checker</name>
+    <packaging>jar</packaging>
     
     <properties>
         <maven.compiler.source>1.10</maven.compiler.source>
