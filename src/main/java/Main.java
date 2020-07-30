@@ -175,7 +175,7 @@ public class Main {
             updateBarText("<html><font color=\"#4191E1\">" + bText.getText() + "</font></html>");
 
             try {
-                URL url = new URL("http://192.168.1.2/");
+                URL url = new URL("http://192.168.1.1/");
                 InputStream is = url.openStream();
                 BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
