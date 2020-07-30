@@ -21,7 +21,7 @@ jobs:
       with:
         java-version: 11
     - name: Build with Maven
-      run: mvn clean compile assembly:single
+      run: mvn clean compile
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.1.1
       with:
