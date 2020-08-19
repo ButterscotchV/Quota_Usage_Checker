@@ -27,3 +27,15 @@ jobs:
       with:
         name: JDK 11 Build
         path: ${{ github.workspace }}/target
+    - name: list
+      run: |
+        ls
+        cd target
+        ls
+    - name: Upload files to a GitHub release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ github.workspace }}/target/Usage_Checker-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+        tag: continuous # ${{ github.ref }}
+        overwrite: true
